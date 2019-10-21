@@ -1,0 +1,60 @@
+name: sample-org
+
+getStatus:
+  component: "@serverless/function"
+  inputs:
+    region: ${env.AWS_REGION}
+    name: ${name}-create-user
+    code: ./src
+    handler: index.getStatusHandler
+    env:
+      DB_TABLE_NAME: ${statusDb.name}
+
+updateStatus:
+  component: "@serverless/function"
+  inputs:
+    region: ${env.AWS_REGION}
+    name: ${name}-status
+    code: ./src
+    handler: index.updateStatusHandler
+    env:
+      DB_TABLE_NAME: ${statusDb.name}
+
+restApi:
+  component: "@serverless/api"
+  inputs:
+    name: ${name}
+    stage: dev
+    region: ${env.AWS_REGION}
+    description: Serverless REST API
+    endpoints:
+      - path: /status/{id}
+        method: POST
+        function: ${updateStatus}
+        request:
+          parameters:
+            paths:
+              id: true
+      - path: /status/{id}
+        method: GET
+        function: ${getStatus}
+        request:
+          parameters:
+            paths:
+              id: true
+
+statusDb:
+  component: "@serverless/aws-dynamodb"
+  inputs:
+    name: ${name}-status-db
+    attributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: timestamp
+        AttributeType: N
+    keySchema:
+      - AttributeName: id
+        KeyType: HASH
+      - AttributeName: timestamp
+        KeyType: RANGE
+    region: ${env.AWS_REGION}
