@@ -1,5 +1,5 @@
 const middy = require("middy");
-const { jsonBodyParser, httpErrorHandler } = require("middy/middlewares");
+const { cors, jsonBodyParser, httpErrorHandler } = require("middy/middlewares");
 const db = require("./db");
 
 const DB_TABLE_NAME = process.env.DB_TABLE_NAME;
@@ -62,7 +62,9 @@ module.exports.getStatus = getStatus;
 module.exports.updateStatus = updateStatus;
 module.exports.getStatusHandler = middy(getStatus)
   .use(jsonBodyParser())
-  .use(httpErrorHandler());
+  .use(httpErrorHandler())
+  .use(cors());
 module.exports.updateStatusHandler = middy(updateStatus)
   .use(jsonBodyParser())
-  .use(httpErrorHandler());
+  .use(httpErrorHandler())
+  .use(cors());
