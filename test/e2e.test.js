@@ -15,7 +15,7 @@ it("e2e works", async () => {
 
   // Updating the status of document should return the event log
   const event1 = await handler.updateStatus({
-    body: { id: documentHash, status: 1 },
+    body: { status: 1 },
     pathParameters: { id: documentHash }
   });
   const event1Res = JSON.parse(event1.body);
@@ -37,7 +37,7 @@ it("e2e works", async () => {
 
   // Updating the status of document should return the event log
   const event2 = await handler.updateStatus({
-    body: { id: documentHash, status: 2 },
+    body: { status: 2 },
     pathParameters: { id: documentHash }
   });
   const event2Res = JSON.parse(event2.body);
@@ -60,3 +60,12 @@ it("e2e works", async () => {
     ]
   });
 }, 5000);
+
+it("should throw when updating with invalid status", async () => {
+  expect(
+    handler.updateStatus({
+      body: { status: "INVALID_STATUS" },
+      pathParameters: { id: "documentHash" }
+    })
+  ).rejects.toThrow('"status" must be a number');
+});

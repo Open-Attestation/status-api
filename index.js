@@ -1,6 +1,7 @@
 const middy = require("middy");
 const { cors, jsonBodyParser, httpErrorHandler } = require("middy/middlewares");
 const db = require("./db");
+const { validateUpdateRequest } = require("./validator");
 
 const DB_TABLE_NAME = process.env.DB_TABLE_NAME;
 
@@ -40,7 +41,7 @@ const updateStatus = async event => {
   const { id } = event.pathParameters;
   const { body } = event;
 
-  // TODO Validate body
+  validateUpdateRequest(body);
 
   const updatedStatus = {
     id: id,
